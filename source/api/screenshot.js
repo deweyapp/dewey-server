@@ -26,7 +26,6 @@ function screenshotService(app){
     });
 
     function intervalRequest(url, res, tries, timer){
-        console.log(tries);
         if (tries === 40) {
             clearInterval(timer);
             res.json({
