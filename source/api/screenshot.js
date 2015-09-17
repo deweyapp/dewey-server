@@ -7,10 +7,15 @@ function screenshotService(app){
         var url = getPage2ImageUrl(address);
 
         request.get(url, function(err, obj, body) {
+            var data = JSON.parse(body);
+
+            if(data.status === 'finished')
+                return res.json(data);
 
             setTimeout(function() {
-                var address = req.query.query;
+
                 request.get(url).pipe(res);
+
             }, 55000);
         });
     });
