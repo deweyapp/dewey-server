@@ -16,20 +16,31 @@ function screenshotService(app){
             if(data.status === 'finished' || data.status === 'error')
                 return res.json(data);
 
-            setInterval(function(){
+            var tries = 0;
+            var timer = setInterval(function(){
 
-                request.get(url, intervalRequest(url, res));
+                request.get(url, intervalRequest(url, res, ++tries, timer));
 
             }, 5000);
         });
     });
 
-    function intervalRequest(url, res){
+    function intervalRequest(url, res, tries, timer){
+        console.log(tries);
+        if (tries === 40) {
+            clearInterval(timer);
+            res.json({
+                image_url: ''
+            });
+        }
+
         request.get(url, function(err, obj, body){
             var data = JSON.parse(body);
 
-            if(data.status === 'finished' || data.status === 'error')
+            if(data.status === 'finished' || data.status === 'error'){
+                clearInterval(timer);
                 return res.json(data);
+            }
         });        
     }
 
