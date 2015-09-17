@@ -16,11 +16,10 @@ app.configure(function(){
 	app.use(express.cookieParser());
 	app.use(cors);
 	app.use(express.methodOverride());
-	app.use(app.router);
 });
 
-require('./source/router')(app);
+// routing
+require('./source/api')(app);
 
 var port = process.env.port || 3000;
-http.createServer(app).listen(port, function() {
-});
+http.createServer(app).listen(port, function() {});
