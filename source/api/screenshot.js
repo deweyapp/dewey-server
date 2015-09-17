@@ -9,16 +9,25 @@ function screenshotService(app){
         request.get(url, function(err, obj, body) {
             var data = JSON.parse(body);
 
-            if(data.status === 'finished')
+            if(data.status === 'finished' || data.status === 'error')
                 return res.json(data);
 
-            setTimeout(function() {
+            setInterval(function(){
 
-                request.get(url).pipe(res);
+                request.get(url, intervalRequest(url, res));
 
-            }, 55000);
+            }, 5000);
         });
     });
+
+    function intervalRequest(url, res){
+        request.get(url, function(err, obj, body){
+            var data = JSON.parse(body);
+
+            if(data.status === 'finished' || data.status === 'error')
+                return res.json(data);
+        });        
+    }
 
     function getPage2ImageUrl(address){
         return 'http://api.page2images.com/restfullink?p2i_url=' +
