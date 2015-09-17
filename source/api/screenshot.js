@@ -3,6 +3,10 @@ var request = require('request');
 function screenshotService(app){
     
     app.get('/screenshot?:query', function(req, res) {
+
+        var ip = req.connection.remoteAddress;
+        console.log(ip);
+
         var address = req.query.query;
         var url = getPage2ImageUrl(address);
 
