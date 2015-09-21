@@ -1,46 +1,64 @@
 var request = require('request');
+var _       = require('underscore');
 
 function screenshotService(app){
     
+    var limit = 3;
+    var storage = [];
+
     app.get('/screenshot?:query', function(req, res) {
 
         var ip = req.connection.remoteAddress;
-        console.log(ip);
-
+        if(isCallAllowed(ip)=== false){
+            return res.json({
+                status: 'error',
+                msg: 'Call limit for today'
+            });
+        }
+        
         var address = req.query.query;
         var url = getPage2ImageUrl(address);
 
         request.get(url, function(err, obj, body) {
             var data = JSON.parse(body);
-
-            if(data.status === 'finished' || data.status === 'error')
-                return res.json(data);
-
-            var tries = 0;
-            var timer = setInterval(function(){
-
-                request.get(url, intervalRequest(url, res, ++tries, timer));
-
-            }, 5000);
+            return res.json(data);
         });
     });
 
-    function intervalRequest(url, res, tries, timer){
-        if (tries === 40) {
-            clearInterval(timer);
-            res.json({
-                image_url: ''
+    function isCallAllowed(ip){
+        var existing = _.findWhere(storage, {id: ip});
+        
+        if(_.isUndefined(existing)){
+            // console.log('First');
+            storage.push({
+                id: ip,
+                limit: 1,
+                lastMade: new Date()
             });
+            return true;
         }
 
-        request.get(url, function(err, obj, body){
-            var data = JSON.parse(body);
+        var now = new Date();
 
-            if(data.status === 'finished' || data.status === 'error'){
-                clearInterval(timer);
-                return res.json(data);
-            }
-        });        
+        var isNotToday = existing.lastMade.getDate() != now.getDate()
+                          || existing.lastMade.getMonth() != now.getMonth()
+                          || existing.lastMade.getFullYear() != now.getFullYear();
+        if(isNotToday === true){
+            // console.log('Not today');
+            existing.limit = 1;
+            existing.lastMade = new Date();
+
+            return true;
+        }
+
+        if(existing.limit <= limit){
+            // console.log('Less');
+            existing.limit ++;
+            return true;
+        }
+        // console.log('Limit');
+
+        return false;
     }
 
     function getPage2ImageUrl(address){
