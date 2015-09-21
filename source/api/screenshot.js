@@ -3,7 +3,7 @@ var _       = require('underscore');
 
 function screenshotService(app){
     
-    var limit = 3;
+    var limit = 200;
     var storage = [];
 
     app.get('/screenshot?:query', function(req, res) {
