@@ -65,12 +65,9 @@ function screenshotService(app){
 
         var apikey = process.env.page2imageKey || 'apikey';
 
-        var ss=  'http://api.page2images.com/restfullink?p2i_url=' +
+        return 'http://api.page2images.com/restfullink?p2i_url=' +
             address +
             '&p2i_device=6&p2i_size=400x150&p2i_screen=1024x768&p2i_imageformat=jpg&p2i_wait=0&p2i_key=' + apikey;
-
-console.log(ss);
-            return ss;
     }
 }
 
