@@ -1,6 +1,4 @@
-var _               = require('underscore');
 var imagemagick     = require('imagemagick-native');
-var request         = require('request');
 var url             = require('url');
 var webshot         = require('webshot');
 var bottleneck      = require("bottleneck");
