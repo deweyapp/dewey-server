@@ -5,18 +5,6 @@ var url             = require('url');
 var webshot         = require('webshot');
 
 function screenshotService(app){
-
-    const webshot_options = {
-        screenSize: {
-            width: 1024, height: 768 // default render size
-        },
-        shotSize: {
-            width: 'window', height: 'window' // snapshot size of whole window
-        },
-        streamType: 'png', // by default png
-        timeout: 60000 // waiting maximum 60 seconds
-    };
-
     // resize to 400px x 300px
     // we are showing screenshots as 200x150 images, but multiplying on 2 to support retina
     const imagepick_options = {
@@ -24,7 +12,7 @@ function screenshotService(app){
         height: 300
     };
 
-    app.get('/screenshot/:url/screenshot.png', function(req, res) {
+    function handleRequest(req, res, type) {
         var requestedUrl = req.param('url');
 
         if (!requestedUrl) {
@@ -32,8 +20,17 @@ function screenshotService(app){
             return;
         }
 
-        res.header('Content-Type', 'image/png');
-        webshot(requestedUrl, webshot_options)
+        res.header('Content-Type', 'image/' + type);
+        webshot(requestedUrl, {
+            screenSize: {
+                width: 1024, height: 768 // default render size
+            },
+            shotSize: {
+                width: 'window', height: 'window' // snapshot size of whole window
+            },
+            streamType: type,
+            timeout: 60000 // waiting maximum 60 seconds
+        })
             .on('error', function(err) {
                 res.status(400).end();
             })
@@ -48,6 +45,14 @@ function screenshotService(app){
             .on('close', function() {
                 res.end();
             });
+    }
+
+    app.get('/screenshot/:url/screenshot.jpg', function(req, res) {
+        handleRequest(req, res, 'jpg');
+    });
+
+    app.get('/screenshot/:url/screenshot.png', function(req, res) {
+        handleRequest(req, res, 'png');
     });
 }
 
