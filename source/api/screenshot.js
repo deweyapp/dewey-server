@@ -24,30 +24,25 @@ function screenshotService(app){
         height: 300
     };
 
-    app.get('/screenshot?:url', function(req, res) {
-        if (!req.query.url) {
+    app.get('/screenshot/:url/screenshot.png', function(req, res) {
+        var requestedUrl = req.param('url');
+
+        if (!requestedUrl) {
             res.status(400).end();
             return;
         }
 
-        var requestedUrl = url.parse(req.query.url);
-        requestedUrl.hash = null;
-        requestedUrl.search = null;
-
-        res.setHeader('Content-Type', 'image/png');
-        webshot(url.format(requestedUrl), webshot_options)
+        res.header('Content-Type', 'image/png');
+        webshot(requestedUrl, webshot_options)
             .on('error', function(err) {
-                console.warn(err);
                 res.status(400).end();
             })
             .pipe(imagemagick.streams.convert(imagepick_options))
             .on('error', function(err) {
-                console.warn(err);
                 res.status(400).end();
             })
             .pipe(res)
             .on('error', function(err) {
-                console.warn(err);
                 res.status(500).end();
             })
             .on('close', function() {

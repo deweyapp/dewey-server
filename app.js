@@ -1,6 +1,8 @@
 var express = require('express');
-var app = express();
 var http = require('http');
+var morgan = require('morgan');
+
+var app = express();
 
 var cors = function (req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
@@ -10,12 +12,16 @@ var cors = function (req, res, next) {
 	next();
 };
 
+var cache = function (req, res, next) {
+	res.header('Cache-Control', 'public, max-age=31557600'); // one year
+
+	next();
+};
+
 app.configure(function(){
-	app.use(express.json());
-	app.use(express.urlencoded());
-	app.use(express.cookieParser());
 	app.use(cors);
-	app.use(express.methodOverride());
+	app.use(cache);
+    app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time'))
 });
 
 // routing

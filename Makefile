@@ -7,6 +7,7 @@ docker-run:
 		--log-opt max-size=10m \
 		--log-opt max-file=10 \
 		--restart=always \
+		--env NODE_ENV=production \
 		outcoldman/dewey-server:latest
 
 docker-rm:

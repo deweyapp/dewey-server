@@ -6,21 +6,21 @@ function faviconService(app){
     const google_url = 'http://www.google.com/s2/favicons?domain=';
     const agent = new https.Agent({keepAlive: true});
 
-    app.get('/favicon?:domain', function(req, res){
-        if (!req.query.domain) {
+    app.get('/favicon/:domain/favicon.ico', function(req, res){
+        var domain = req.param('domain')
+        if (!domain) {
             res.status(400).end();
             return;
         }
 
-        res.setHeader('Content-Type', 'image/png');
+        res.header('Content-Type', 'image/png');
         https.get({
             agent: agent,
             protocol: 'https:',
             host: 'www.google.com',
-            path: '/s2/favicons?domain=' + querystring.escape(req.query.domain)
+            path: '/s2/favicons?domain=' + domain // we expect that domain is already encoded
         }, function(googleResponse, err) {
             if (err) {
-                console.warn(err);
                 res.status(400).end();
                 return;
             }
