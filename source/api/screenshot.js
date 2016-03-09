@@ -1,74 +1,59 @@
-var request = require('request');
-var _       = require('underscore');
+var _               = require('underscore');
+var imagemagick     = require('imagemagick-native');
+var request         = require('request');
+var url             = require('url');
+var webshot         = require('webshot');
 
 function screenshotService(app){
-    
-    var limit = 200;
-    var storage = [];
+    // resize to 400px x 300px
+    // we are showing screenshots as 200x150 images, but multiplying on 2 to support retina
+    const imagepick_options = {
+        width: 400,
+        height: 300
+    };
 
-    app.get('/screenshot?:query', function(req, res) {
+    function handleRequest(req, res, type) {
+        var requestedUrl = req.param('url');
 
-        var ip = req.connection.remoteAddress;
-        if(isCallAllowed(ip)=== false){
-            return res.json({
-                status: 'error',
-                msg: 'Call limit for today'
-            });
+        if (!requestedUrl) {
+            res.status(400).end();
+            return;
         }
-        
-        var address = req.query.query;
-        var url = getPage2ImageUrl(address);
 
-        request.get(url, function(err, obj, body) {
-            var data = JSON.parse(body);
-            return res.json(data);
-        });
+        res.header('Content-Type', 'image/' + type);
+        webshot(requestedUrl, {
+            screenSize: {
+                width: 1024, height: 768 // default render size
+            },
+            shotSize: {
+                width: 'window', height: 'window' // snapshot size of whole window
+            },
+            streamType: type,
+            timeout: 60000 // waiting maximum 60 seconds
+        })
+            .on('error', function(err) {
+                res.status(400).end();
+            })
+            .pipe(imagemagick.streams.convert(imagepick_options))
+            .on('error', function(err) {
+                res.status(400).end();
+            })
+            .pipe(res)
+            .on('error', function(err) {
+                res.status(500).end();
+            })
+            .on('close', function() {
+                res.end();
+            });
+    }
+
+    app.get('/screenshot/:url/screenshot.jpg', function(req, res) {
+        handleRequest(req, res, 'jpg');
     });
 
-    function isCallAllowed(ip){
-        var existing = _.findWhere(storage, {id: ip});
-        
-        if(_.isUndefined(existing)){
-            // console.log('First');
-            storage.push({
-                id: ip,
-                limit: 1,
-                lastMade: new Date()
-            });
-            return true;
-        }
-
-        var now = new Date();
-
-        var isNotToday = existing.lastMade.getDate() != now.getDate()
-                          || existing.lastMade.getMonth() != now.getMonth()
-                          || existing.lastMade.getFullYear() != now.getFullYear();
-        if(isNotToday === true){
-            // console.log('Not today');
-            existing.limit = 1;
-            existing.lastMade = new Date();
-
-            return true;
-        }
-
-        if(existing.limit <= limit){
-            // console.log('Less');
-            existing.limit ++;
-            return true;
-        }
-        // console.log('Limit');
-
-        return false;
-    }
-
-    function getPage2ImageUrl(address){
-
-        var apikey = process.env.page2imageKey || 'apikey';
-
-        return 'http://api.page2images.com/restfullink?p2i_url=' +
-            address +
-            '&p2i_device=6&p2i_size=400x150&p2i_screen=1024x768&p2i_imageformat=jpg&p2i_wait=0&p2i_key=' + apikey;
-    }
+    app.get('/screenshot/:url/screenshot.png', function(req, res) {
+        handleRequest(req, res, 'png');
+    });
 }
 
 module.exports = screenshotService;

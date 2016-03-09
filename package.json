@@ -19,8 +19,12 @@
   "homepage": "http://deweyapp.io/",
   "dependencies": {
     "express": "~3.5.1",
+    "imagemagick-native": "^1.9.1",
+    "morgan": "^1.7.0",
     "request": "~2.21.0",
-    "underscore": "~1.4.4"
+    "sinon": "^1.17.3",
+    "underscore": "~1.4.4",
+    "webshot": "^0.18.0"
   },
   "engines": {
     "node": "0.10.x"

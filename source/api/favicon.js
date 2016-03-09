@@ -1,18 +1,33 @@
-var request = require('request');
+var querystring = require('querystring');
+var url         = require('url');
+var https       = require('https');
 
 function faviconService(app){
-    app.get('/favicon?:query', getFaviconByUrl, function(req, res){
-        res.json(req.data);
-    });
-    
-    function getFaviconByUrl(req, res, next){
-        var query = req.query.query;
-        request.get(getUrl() + query).pipe(res);
-    }
+    const google_url = 'http://www.google.com/s2/favicons?domain=';
+    const agent = new https.Agent({keepAlive: true});
 
-    function getUrl(){
-    	return 'http://www.google.com/s2/favicons?domain=';
-    }
+    app.get('/favicon/:domain/favicon.ico', function(req, res){
+        var domain = req.param('domain')
+        if (!domain) {
+            res.status(400).end();
+            return;
+        }
+
+        res.header('Content-Type', 'image/png');
+        https.get({
+            agent: agent,
+            protocol: 'https:',
+            host: 'www.google.com',
+            path: '/s2/favicons?domain=' + domain // we expect that domain is already encoded
+        }, function(googleResponse, err) {
+            if (err) {
+                res.status(400).end();
+                return;
+            }
+
+            googleResponse.pipe(res);
+        });
+    });
 }
 
 module.exports = faviconService;
