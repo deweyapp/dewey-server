@@ -9,4 +9,6 @@ COPY . /usr/local/src/deweyserver/
 
 RUN (cd /usr/local/src/deweyserver/ && npm install)
 
+EXPOSE 3000
+
 CMD node /usr/local/src/deweyserver/cluster.js
