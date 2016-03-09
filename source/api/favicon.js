@@ -5,7 +5,7 @@ var bottleneck  = require("bottleneck");
 
 function faviconService(app){
     const google_url = 'http://www.google.com/s2/favicons?domain=';
-    const agent = new https.Agent({keepAlive: true, maxSockets: 32});
+    const agent = new https.Agent({keepAlive: true, maxSockets: process.env.DEWEY_SERVER_MAX_FAVICON || 32});
 
     app.get('/favicon/:domain/favicon.ico', function(req, res){
         var domain = req.param('domain')

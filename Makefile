@@ -8,6 +8,8 @@ docker-run:
 		--log-opt max-file=1000 \
 		--restart=always \
 		--env NODE_ENV=production \
+		--env DEWEY_SERVER_MAX_WEBSHOT=6 \
+		--env DEWEY_SERVER_MAX_FAVICON=32 \
 		--memory 300M \
 		outcoldman/dewey-server:latest
 

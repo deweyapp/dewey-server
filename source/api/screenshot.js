@@ -11,7 +11,7 @@ function screenshotService(app){
         height: 300
     };
 
-    var limiter = new bottleneck(16);
+    var limiter = new bottleneck(process.env.DEWEY_SERVER_MAX_WEBSHOT || 4);
 
     function handleRequest(req, res, type) {
         var requestedUrl = req.param('url');
