@@ -14,7 +14,7 @@ function screenshotService(app){
             width: 'window', height: 'window' // snapshot size of whole window
         },
         streamType: 'png', // by default png
-        timeout: 10000 // waiting maximum 10 seconds
+        timeout: 60000 // waiting maximum 60 seconds
     };
 
     // resize to 400px x 300px
