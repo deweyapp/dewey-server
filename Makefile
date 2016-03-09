@@ -4,10 +4,12 @@ docker-run:
 		--name dewey-server \
 		--publish 80:3000 \
 		--log-driver=json-file \
-		--log-opt max-size=10m \
-		--log-opt max-file=10 \
+		--log-opt max-size=1m \
+		--log-opt max-file=1000 \
 		--restart=always \
 		--env NODE_ENV=production \
+		--memory 300M \
+		--memory-swap 0 \
 		outcoldman/dewey-server:latest
 
 docker-rm:

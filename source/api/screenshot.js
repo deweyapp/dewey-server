@@ -3,6 +3,7 @@ var imagemagick     = require('imagemagick-native');
 var request         = require('request');
 var url             = require('url');
 var webshot         = require('webshot');
+var bottleneck      = require("bottleneck");
 
 function screenshotService(app){
     // resize to 400px x 300px
@@ -11,6 +12,8 @@ function screenshotService(app){
         width: 400,
         height: 300
     };
+
+    var limiter = new bottleneck(4);
 
     function handleRequest(req, res, type) {
         var requestedUrl = req.param('url');
@@ -21,30 +24,43 @@ function screenshotService(app){
         }
 
         res.header('Content-Type', 'image/' + type);
-        webshot(requestedUrl, {
-            screenSize: {
-                width: 1024, height: 768 // default render size
-            },
-            shotSize: {
-                width: 'window', height: 'window' // snapshot size of whole window
-            },
-            streamType: type,
-            timeout: 60000 // waiting maximum 60 seconds
-        })
-            .on('error', function(err) {
-                res.status(400).end();
+
+
+        limiter.submit(
+        function(cb) {
+            webshot(requestedUrl, {
+                screenSize: {
+                    width: 1024, height: 768 // default render size
+                },
+                shotSize: {
+                    width: 'window', height: 'window' // snapshot size of whole window
+                },
+                streamType: type,
+                timeout: 10000 // waiting maximum 10 seconds
             })
-            .pipe(imagemagick.streams.convert(imagepick_options))
-            .on('error', function(err) {
-                res.status(400).end();
-            })
-            .pipe(res)
-            .on('error', function(err) {
-                res.status(500).end();
-            })
-            .on('close', function() {
-                res.end();
-            });
+                .on('error', function(err) {
+                    res.status(400).end();
+                    cb();
+                })
+                .pipe(imagemagick.streams.convert(imagepick_options))
+                .on('error', function(err) {
+                    res.status(400).end();
+                    cb();
+                })
+                .pipe(res)
+                .on('error', function(err) {
+                    res.status(500).end();
+                    cb();
+                })
+                .on('drain', function() {
+                    res.end();
+                    cb();
+                })
+                .on('finish', function() {
+                    res.end();
+                    cb();
+                });
+        }, null)
     }
 
     app.get('/screenshot/:url/screenshot.jpg', function(req, res) {
