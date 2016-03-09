@@ -34,7 +34,8 @@ function screenshotService(app){
                     width: 'window', height: 'window' // snapshot size of whole window
                 },
                 streamType: type,
-                timeout: 10000 // waiting maximum 10 seconds
+                timeout: 60000, // waiting maximum 10 seconds
+                renderDelay: 200
             })
                 .on('error', function(err) {
                     res.status(400).end();
