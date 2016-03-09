@@ -8,7 +8,7 @@ docker-run:
 		--log-opt max-file=1000 \
 		--restart=always \
 		--env NODE_ENV=production \
-		--memory 250M \
+		--memory 300M \
 		outcoldman/dewey-server:latest
 
 docker-rm:

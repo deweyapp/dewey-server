@@ -11,7 +11,7 @@ function screenshotService(app){
         height: 300
     };
 
-    var limiter = new bottleneck(4);
+    var limiter = new bottleneck(16);
 
     function handleRequest(req, res, type) {
         var requestedUrl = req.param('url');
