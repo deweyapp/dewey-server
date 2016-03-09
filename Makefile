@@ -1,7 +1,7 @@
 docker-run:
+	@docker pull outcoldman/dewey-server:latest
 	@docker run -d \
 		--name dewey-server \
-		--pull \
 		--publish 80:3000 \
 		--log-driver=json-file \
 		--log-opt max-size=10m \
