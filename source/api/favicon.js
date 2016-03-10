@@ -26,6 +26,7 @@ function faviconService(app){
                 return;
             }
 
+            res.header('Cache-Control', 'public, max-age=31557600'); // one year
             googleResponse.pipe(res);
         });
     });

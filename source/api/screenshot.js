@@ -14,16 +14,23 @@ function screenshotService(app){
     var limiter = new bottleneck(process.env.DEWEY_SERVER_MAX_WEBSHOT || 4);
 
     function handleRequest(req, res, type) {
-        var requestedUrl = req.param('url');
+        var requestedUrl = req.params.url;
 
         if (!requestedUrl) {
             res.status(400).end();
             return;
         }
 
+        var parsedUrl = url.parse(requestedUrl);
+        if (!parsedUrl.protocol ||
+            !parsedUrl.host) {
+            res.status(400).end();
+            return;
+        }
+
         res.header('Content-Type', 'image/' + type);
 
-
+        res.header('Cache-Control', 'public, max-age=31557600'); // one year
         limiter.submit(
         function(cb) {
             var webshotStream = webshot(requestedUrl, {
@@ -43,12 +50,12 @@ function screenshotService(app){
             });
 
             webshotStream.on('error', function(err) {
-                res.status(400).end();
+                res.status(500).end();
             });
 
             var imagemagickStream = imagemagick.streams.convert(imagepick_options);
             imagemagickStream.on('error', function(err) {
-                res.status(400).end();
+                res.status(500).end();
             });
 
             webshotStream.pipe(imagemagickStream);

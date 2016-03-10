@@ -12,14 +12,7 @@ var cors = function (req, res, next) {
 	next();
 };
 
-var cache = function (req, res, next) {
-	res.header('Cache-Control', 'public, max-age=31557600'); // one year
-
-	next();
-};
-
 app.use(cors);
-app.use(cache);
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time'))
 
 // routing
