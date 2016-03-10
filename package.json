@@ -1,31 +1,24 @@
 {
   "name": "dewey-server",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/artemgrygor/dewey-server.git"
-  },
-  "author": "artem.grygor@gmail.com",
-  "devDependencies": {
-    "mocha": "~1.10.0",
-    "chai": "~1.6.1",
-    "sinon-chai": "~2.4.0"
+    "url": "git://github.com/deweyapp/dewey-server.git"
   },
   "homepage": "http://deweyapp.io/",
   "dependencies": {
     "bottleneck": "^1.10.2",
-    "express": "~3.5.1",
+    "express": "^4.13.4",
     "imagemagick-native": "^1.9.1",
     "morgan": "^1.7.0",
-    "sinon": "^1.17.3",
     "webshot": "^0.18.0"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": "5.7.x"
   }
 }

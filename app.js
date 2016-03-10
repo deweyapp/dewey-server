@@ -18,11 +18,9 @@ var cache = function (req, res, next) {
 	next();
 };
 
-app.configure(function(){
-	app.use(cors);
-	app.use(cache);
-    app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time'))
-});
+app.use(cors);
+app.use(cache);
+app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time'))
 
 // routing
 require('./source/api')(app);

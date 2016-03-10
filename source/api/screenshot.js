@@ -26,7 +26,7 @@ function screenshotService(app){
 
         limiter.submit(
         function(cb) {
-            webshot(requestedUrl, {
+            var webshotStream = webshot(requestedUrl, {
                 screenSize: {
                     width: 1024, height: 768 // default render size
                 },
@@ -34,31 +34,34 @@ function screenshotService(app){
                     width: 'window', height: 'window' // snapshot size of whole window
                 },
                 streamType: type,
-                timeout: 60000, // waiting maximum 10 seconds
+                timeout: 50000, // waiting maximum 10 seconds
                 renderDelay: 200
-            })
-                .on('error', function(err) {
-                    res.status(400).end();
-                    cb();
-                })
-                .pipe(imagemagick.streams.convert(imagepick_options))
-                .on('error', function(err) {
-                    res.status(400).end();
-                    cb();
-                })
-                .pipe(res)
-                .on('error', function(err) {
-                    res.status(500).end();
-                    cb();
-                })
-                .on('drain', function() {
-                    res.end();
-                    cb();
-                })
-                .on('finish', function() {
-                    res.end();
-                    cb();
-                });
+            });
+
+            webshotStream.on('end', function() {
+                cb();
+            });
+
+            webshotStream.on('error', function(err) {
+                res.status(400).end();
+            });
+
+            var imagemagickStream = imagemagick.streams.convert(imagepick_options);
+            imagemagickStream.on('error', function(err) {
+                res.status(400).end();
+            });
+
+            webshotStream.pipe(imagemagickStream);
+
+            res.on('error', function(err) {
+                res.status(500).end();
+            });
+
+            res.on('finish', function() {
+                res.end();
+            });
+
+            imagemagickStream.pipe(res)
         }, null)
     }
 
