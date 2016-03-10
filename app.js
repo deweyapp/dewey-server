@@ -2,6 +2,11 @@ var express = require('express');
 var http = require('http');
 var morgan = require('morgan');
 
+if (process.env.DEWEY_SERVER_APPINSIGHTS_KEY) {
+    var appInsights = require("applicationinsights");
+    appInsights.setup(process.env.DEWEY_SERVER_APPINSIGHTS_KEY).start();
+}
+
 var app = express();
 
 var cors = function (req, res, next) {

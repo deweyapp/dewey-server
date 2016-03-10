@@ -12,6 +12,7 @@
   },
   "homepage": "http://deweyapp.io/",
   "dependencies": {
+    "applicationinsights": "^0.15.11",
     "bottleneck": "^1.10.2",
     "express": "^4.13.4",
     "imagemagick-native": "^1.9.1",
