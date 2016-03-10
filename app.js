@@ -5,6 +5,7 @@ var morgan = require('morgan');
 if (process.env.DEWEY_SERVER_APPINSIGHTS_KEY) {
     var appInsights = require("applicationinsights");
     appInsights.setup(process.env.DEWEY_SERVER_APPINSIGHTS_KEY).start();
+    console.log('App Insights started with key = ' + process.env.DEWEY_SERVER_APPINSIGHTS_KEY);
 }
 
 var app = express();

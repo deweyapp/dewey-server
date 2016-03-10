@@ -8,7 +8,7 @@ function faviconService(app){
     const agent = new https.Agent({keepAlive: true, maxSockets: process.env.DEWEY_SERVER_MAX_FAVICON || 32});
 
     app.get('/favicon/:domain/favicon.ico', function(req, res){
-        var domain = req.param('domain')
+        var domain = req.params.domain;
         if (!domain) {
             res.status(400).end();
             return;
